@@ -12,9 +12,26 @@
 //! "--unregister": automatically unregister after 2 seconds.
 
 use mdns_sd::{ServiceDaemon, ServiceInfo};
-use std::{env, thread, time::Duration};
+use std::{env, process, thread, path::Path, time::Duration};
+
+fn check_wpa_supplicant_file() -> bool {
+    let path = "/etc/wpa_supplicant.conf";
+    let path = Path::new(path);
+    if path.exists() {
+        return true;
+    }
+    return false;
+}
 
 fn main() {
+    // Commented out command to start gstreamer pipeline
+    /*let gst_proc = Command::new("gst-launch-1.0")
+                           .arg("udpsrc port=5001 !")
+                           .arg("'application/x-rtp,media=audio,payload=96,clock-rate=44100,encoding-name=L16,channels=2' !")
+                           .arg("rtpL16depay !")
+                           .arg("audioconvert !")
+                           .arg("autoaudiosink sync=false")
+                           .spawn();*/
     // Simple command line options.
     let args: Vec<String> = env::args().collect();
     let mut should_unreg = false;
@@ -46,7 +63,7 @@ fn main() {
     // If the caller knows specific addrs to use, then assign the addrs here.
     let my_addrs = "";
     let service_hostname = "mdns-example.local.";
-    let port = 3456;
+    let port = 5001;
 
     // The key string in TXT properties is case insensitive. Only the first
     // (key, val) pair will take effect.
